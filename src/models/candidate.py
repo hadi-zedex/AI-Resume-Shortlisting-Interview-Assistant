@@ -48,5 +48,5 @@ class CandidateProfile(BaseModel):
     total_experience_years: Optional[float] = None
     summary: Optional[str] = None                # Claude-generated 2-line summary
 
-    # Always preserve original for debugging / re-processing
+    # preserving original for debugging
     raw_text: str = ""
