@@ -1,1 +1,45 @@
-# TODO
+# =========================
+# Core Backend
+# =========================
+fastapi
+uvicorn[standard]
+pydantic
+
+# =========================
+# LLM / AI
+# =========================
+openai
+tiktoken
+
+# =========================
+# PDF Parsing
+# =========================
+pypdf
+
+# =========================
+# Embeddings / Similarity
+# =========================
+numpy
+scikit-learn
+
+# =========================
+# Environment Config
+# =========================
+python-dotenv
+
+# =========================
+# HTTP / Retry
+# =========================
+httpx
+
+# =========================
+# Testing
+# =========================
+pytest
+pytest-mock
+
+# =========================
+# Dev Tools (optional but nice)
+# =========================
+black
+isort
