@@ -1,0 +1,87 @@
+# =========================
+# Python
+# =========================
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+
+# =========================
+# Virtual Environment
+# =========================
+venv/
+.venv/
+env/
+ENV/
+
+# =========================
+# Environment Variables / Secrets
+# =========================
+.env
+.env.*
+!.env.example
+
+# =========================
+# IDE / Editor
+# =========================
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# =========================
+# OS Files
+# =========================
+.DS_Store
+Thumbs.db
+
+# =========================
+# Logs
+# =========================
+*.log
+
+# =========================
+# Testing / Coverage
+# =========================
+.pytest_cache/
+.coverage
+htmlcov/
+*.cover
+
+# =========================
+# Build / Distribution
+# =========================
+build/
+dist/
+*.egg-info/
+
+# =========================
+# LLM / Runtime Cache
+# =========================
+.cache/
+.llm_cache/
+
+# =========================
+# Data Files (IMPORTANT)
+# =========================
+
+# Ignore large resumes
+data/sample_resumes/*.pdf
+
+# Ignore generated outputs
+data/outputs/
+data/processed/
+
+# =========================
+# Vector DB / Embedding stores (future)
+# =========================
+*.faiss
+*.pkl
+*.npy
+*.sqlite3
+
+# =========================
+# Misc
+# =========================
+*.tmp
+*.bak
