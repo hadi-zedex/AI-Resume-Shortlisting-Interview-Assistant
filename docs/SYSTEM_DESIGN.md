@@ -8,8 +8,6 @@
 5. [AI Strategy](#ai-strategy)
 6. [Scoring Design](#scoring-design)
 7. [Error Handling Strategy](#error-handling-strategy)
-8. [Scalability Plan](#scalability-plan)
-9. [Key Design Decisions](#key-design-decisions)
 
 ---
 
@@ -206,68 +204,3 @@ Malformed LLM outputs for individual fields are handled without crashing the pip
 
 ---
 
-## Scalability Plan
-
-The current implementation is synchronous and single-candidate.
-Here is how it would be extended for production:
-
-### Short term — caching
-```
-JD text  →  hash(JD text)  →  cache lookup
-                               hit  → return cached JobDescription
-                               miss → LLM call → store in cache
-```
-
-The same JD is parsed once regardless of how many resumes are screened against it.
-
-### Medium term — async batch processing
-```
-┌──────────────┐     ┌──────────────┐     ┌──────────────────┐
-│  API / UI    │────▶│  Task Queue  │────▶│  Worker Pool     │
-│  (FastAPI)   │     │  (Redis)     │     │  (Celery)        │
-└──────────────┘     └──────────────┘     │  N workers       │
-                                          │  each runs the   │
-                                          │  full pipeline   │
-                                          └──────────────────┘
-```
-
-Each resume becomes a task on the queue.
-Workers process tasks in parallel.
-Results are stored and retrieved asynchronously.
-
-### Long term — score calibration
-
-Recruiter accept/reject decisions are logged per candidate.
-Dimension weights are re-optimised periodically based on hiring outcomes.
-This closes the feedback loop between the scoring model and real-world results.
-
----
-
-## Key Design Decisions
-
-### 1. Separate LLM calls per dimension vs. one large prompt
-**Decision:** 4 separate calls
-**Reason:** Each scorer is independently testable, produces cleaner structured
-output, and is easier to debug. A single large prompt produces entangled outputs
-that are harder to parse and harder to attribute errors to.
-
-### 2. Manual model construction vs. `Model(**raw_json)`
-**Decision:** Manual field-by-field construction in all extractors
-**Reason:** Direct Pydantic unpacking crashes on any unexpected field from Claude.
-Manual construction gives per-field fallbacks and clear error attribution.
-
-### 3. ExactMatch runs before SemanticSimilarity
-**Decision:** ExactMatch results are passed to SemanticSimilarity
-**Reason:** Prevents double-counting. If "Python" is already an exact match,
-the semantic scorer doesn't re-evaluate it. The two scorers are additive and
-non-overlapping.
-
-### 4. Prompts as separate files vs. inline strings
-**Decision:** All prompts in `src/llm/prompts/`
-**Reason:** Prompts are code. Separate files make them reviewable, versionable,
-and iterable independently from the scorer logic.
-
-### 5. Singleton pattern for all major components
-**Decision:** `scoring_engine`, `llm_client`, `pdf_parser` etc. are singletons
-**Reason:** Simple and predictable for a single-process system. For multi-worker
-deployment, these would be replaced with connection pools and stateless functions.
