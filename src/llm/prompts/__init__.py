@@ -20,7 +20,12 @@ from .score_ownership import (
     build_score_ownership_prompt,
     format_experience_for_prompt as format_experience_for_ownership,
 )
-
+from .generate_questions import (
+    GENERATE_QUESTIONS_SYSTEM,
+    build_generate_questions_prompt,
+    format_experience_for_questions,
+    format_skill_match_summary,
+)
 __all__ = [
     "EXTRACT_RESUME_SYSTEM",
     "build_extract_resume_prompt",
@@ -34,4 +39,8 @@ __all__ = [
     "SCORE_OWNERSHIP_SYSTEM",
     "build_score_ownership_prompt",
     "format_experience_for_ownership",
+    "GENERATE_QUESTIONS_SYSTEM",
+    "build_generate_questions_prompt",
+    "format_experience_for_questions",
+    "format_skill_match_summary",
 ]
