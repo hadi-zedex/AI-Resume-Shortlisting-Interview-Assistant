@@ -81,7 +81,7 @@ SCORE:       74.3 / 100
 See [`docs/SYSTEM_DESIGN.md`](docs/SYSTEM_DESIGN.md) for the full architecture document.
 
 ### High-level flow
-![Architecture Diagram](docs/Architecture_diagram.png)
+![Architecture Diagram](docs/High-level_flow_diagram.png)
 
 ### Project structure
 ```
@@ -112,8 +112,6 @@ src/
 - **One candidate per PDF**. The parser extracts a single `CandidateProfile`
   per file. Multi-resume PDFs are not handled.
 
-- **Claude is the source of truth for ambiguous parsing**. If a resume is
-  poorly formatted, we trust Claude's extraction over brittle regex rules.
 
 ### Trade-offs
 
@@ -168,9 +166,15 @@ src/
 
 ## AI Tools Used
 
-### What Claude was used for
+-Used Chatgpt for research
 
-This project uses Claude (`claude-sonnet-4-20250514`) for 4 tasks:
+-Used excalidraw for creating diagrams
+
+-Used Claude for architecture ideas
+
+-Used Claude for coding and boilerplate codes
+
+-LLM calls were used for tasks below
 
 | Task | Why AI, not code |
 |---|---|
@@ -228,15 +232,6 @@ TIER_B_MIN_SCORE = 55.0
 - Python 3.11+
 - Anthropic API key
 - See `requirements.txt` for full dependency list
-```
-anthropic
-pydantic[email]
-pdfplumber
-python-dotenv
-```
 
 ---
 
-## License
-
-MIT
