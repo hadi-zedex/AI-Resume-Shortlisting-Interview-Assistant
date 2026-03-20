@@ -3,6 +3,7 @@ from .candidate import CandidateProfile, CandidateSkill, Experience, Education
 from .job import JobDescription, RequiredSkill
 from .scoring import ScoringResult, DimensionScore, SkillMatchDetail
 from .tier import TierClassification, TierThresholds, TIER_LABELS
+from .interview import InterviewQuestion, InterviewPlan
 
 __all__ = [
     # Enums
@@ -26,4 +27,7 @@ __all__ = [
     "TierClassification",
     "TierThresholds",
     "TIER_LABELS",
+    # Interview
+    "InterviewQuestion",
+    "InterviewPlan",
 ]
