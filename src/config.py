@@ -1,7 +1,16 @@
 import os
-from dotenv import load_dotenv
+import warnings
 
-load_dotenv()
+try:
+    from dotenv import load_dotenv
+except ImportError:
+    load_dotenv = None
+    warnings.warn(
+        "python-dotenv package not installed; environment variables must be set externally."
+    )
+
+if load_dotenv:
+    load_dotenv()
 
 
 class Config:
