@@ -47,3 +47,5 @@ isort
 anthropic
 pydantic[email]
 pdfplumber
+
+streamlit
