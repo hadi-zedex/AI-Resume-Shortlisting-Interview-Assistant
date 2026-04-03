@@ -1,0 +1,23 @@
+Senior Backend Engineer
+
+We are looking for a Senior Backend Engineer to join our data engineering team.
+
+Required Skills:
+- Python (5+ years)
+- Apache Kafka or similar message queue
+- Docker and Kubernetes
+- PostgreSQL or similar relational database
+- Experience with microservices architecture
+
+Preferred Skills:
+- Terraform
+- AWS or GCP cloud experience
+- Redis
+
+Responsibilities:
+- Design and own backend microservices processing millions of events daily
+- Lead technical decisions for data pipeline architecture
+- Mentor junior engineers
+- Ensure 99.9% SLA on critical payment services
+
+Minimum 4 years of experience required.
