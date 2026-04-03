@@ -1,21 +1,25 @@
 import time
 import json
-import anthropic
+from openai import OpenAI
+from openai import RateLimitError, APITimeoutError, APIConnectionError, APIStatusError
 from typing import Optional
 from src.config import config
 
 
 class LLMClient:
     """
-    Wrapper around the Anthropic client.
+    Wrapper around the Groq client (OpenAI-compatible API).
     Handles retries, timeouts, and JSON extraction.
     All LLM calls in the codebase go through this class.
     """
 
     def __init__(self):
-        if not config.ANTHROPIC_API_KEY:
-            raise EnvironmentError("ANTHROPIC_API_KEY is not set.")
-        self._client = anthropic.Anthropic(api_key=config.ANTHROPIC_API_KEY)
+        if not config.GROQ_API_KEY:
+            raise EnvironmentError("GROQ_API_KEY is not set.")
+        self._client = OpenAI(
+            api_key=config.GROQ_API_KEY,
+            base_url="https://api.groq.com/openai/v1",
+        )
 
     def complete(
         self,
@@ -38,41 +42,40 @@ class LLMClient:
         Raises:
             RuntimeError: If all retries are exhausted.
         """
-        messages = [{"role": "user", "content": prompt}]
+        messages = []
+        if system:
+            messages.append({"role": "system", "content": system})
+        messages.append({"role": "user", "content": prompt})
         last_exception: Optional[Exception] = None
 
         for attempt in range(1, config.MAX_RETRIES + 1):
             try:
-                kwargs = {
-                    "model": config.MODEL_NAME,
-                    "max_tokens": max_tokens,
-                    "messages": messages,
-                }
-                if system:
-                    kwargs["system"] = system
+                response = self._client.chat.completions.create(
+                    model=config.MODEL_NAME,
+                    max_tokens=max_tokens,
+                    messages=messages,
+                )
+                return response.choices[0].message.content
 
-                response = self._client.messages.create(**kwargs)
-                return response.content[0].text
-
-            except anthropic.RateLimitError as e:
+            except RateLimitError as e:
                 wait = config.RETRY_DELAY_SECONDS * attempt
                 print(f"[LLMClient] Rate limited. Waiting {wait}s (attempt {attempt}/{config.MAX_RETRIES})")
                 time.sleep(wait)
                 last_exception = e
 
-            except anthropic.APITimeoutError as e:
+            except APITimeoutError as e:
                 wait = config.RETRY_DELAY_SECONDS * attempt
                 print(f"[LLMClient] Timeout. Waiting {wait}s (attempt {attempt}/{config.MAX_RETRIES})")
                 time.sleep(wait)
                 last_exception = e
 
-            except anthropic.APIConnectionError as e:
+            except APIConnectionError as e:
                 wait = config.RETRY_DELAY_SECONDS * attempt
                 print(f"[LLMClient] Connection error. Waiting {wait}s (attempt {attempt}/{config.MAX_RETRIES})")
                 time.sleep(wait)
                 last_exception = e
 
-            except anthropic.APIStatusError as e:
+            except APIStatusError as e:
                 # Non-retryable (4xx errors like invalid request)
                 raise RuntimeError(
                     f"[LLMClient] API error {e.status_code}: {e.message}"

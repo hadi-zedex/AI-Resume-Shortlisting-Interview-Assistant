@@ -44,7 +44,7 @@ pytest-mock
 black
 isort
 
-anthropic
+# groq uses the openai SDK (already listed above)
 pydantic[email]
 pdfplumber
 

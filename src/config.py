@@ -14,9 +14,9 @@ if load_dotenv:
 
 
 class Config:
-    # --- Anthropic ---
-    ANTHROPIC_API_KEY: str = os.getenv("ANTHROPIC_API_KEY", "")
-    MODEL_NAME: str = "claude-sonnet-4-20250514"
+    # --- Groq ---
+    GROQ_API_KEY: str = os.getenv("GROQ_API_KEY", "")
+    MODEL_NAME: str = "llama-3.3-70b-versatile"
     MAX_TOKENS: int = 4096
 
     # --- LLM Retry Settings ---
@@ -41,10 +41,11 @@ class Config:
     @classmethod
     def validate(cls) -> None:
         """Call this at startup to catch missing config early."""
-        if not cls.ANTHROPIC_API_KEY:
+        if not cls.GROQ_API_KEY:
             raise EnvironmentError(
-                "ANTHROPIC_API_KEY is not set. "
-                "Add it to your .env file."
+                "GROQ_API_KEY is not set. "
+                "Add it to your .env file. "
+                "Get a free key at https://console.groq.com"
             )
 
         weights_sum = (
