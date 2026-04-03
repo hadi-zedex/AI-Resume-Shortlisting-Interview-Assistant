@@ -26,7 +26,7 @@ def make_achievement_response(
     """
     return {
         "score_0_to_100": score,
-        "achievement_signals": signals or [
+        "achievement_signals": signals if signals is not None else [
             {
                 "text": "Reduced latency by 40%",
                 "signal_type": "quantified_impact",

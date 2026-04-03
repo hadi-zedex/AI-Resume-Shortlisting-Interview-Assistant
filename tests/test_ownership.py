@@ -28,7 +28,7 @@ def make_ownership_response(
     """
     return {
         "score_0_to_100": score,
-        "ownership_signals": ownership_signals or [
+        "ownership_signals": ownership_signals if ownership_signals is not None else [
             {
                 "text": "Led a team of 6 engineers",
                 "signal_type": "led_people",
@@ -40,7 +40,7 @@ def make_ownership_response(
                 "strength": "strong",
             },
         ],
-        "weak_signals": weak_signals or [],
+        "weak_signals": weak_signals if weak_signals is not None else [],
         "seniority_context": seniority_context,
         "missing": missing,
         "explanation": explanation,
