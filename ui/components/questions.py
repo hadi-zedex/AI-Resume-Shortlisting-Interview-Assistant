@@ -1,4 +1,5 @@
 import streamlit as st
+from ui.utils import st_html
 from src.models import InterviewPlan, InterviewQuestion
 from src.models.enums import Tier
 
@@ -16,29 +17,28 @@ def render_questions(plan: InterviewPlan) -> None:
     Args:
         plan: InterviewPlan from the QuestionGenerator.
     """
-    st.markdown(
+    st_html(
         '<div class="section-header">Interview Plan</div>',
-        unsafe_allow_html=True,
     )
 
     # --- Briefing card ---
     _render_briefing(plan)
 
-    st.markdown("<br>", unsafe_allow_html=True)
+    st_html("<br>")
 
     # --- Questions ---
-    st.markdown("""
+    st_html("""
     <div style="font-size: 0.72rem; font-weight: 600; letter-spacing: 0.1em;
                 text-transform: uppercase; color: #64748b;
                 margin-bottom: 0.75rem;">
         Questions
     </div>
-    """, unsafe_allow_html=True)
+    """)
 
     for i, question in enumerate(plan.questions, start=1):
         _render_question_card(question, i)
 
-    st.markdown("<br>", unsafe_allow_html=True)
+    st_html("<br>")
 
     # --- Red flags + green flags ---
     left, right = st.columns(2, gap="medium")
@@ -76,7 +76,7 @@ def _render_briefing(plan: InterviewPlan) -> None:
     tier_colors = _tier_badge_colors(plan.tier)
     duration = plan.recommended_duration_minutes
 
-    st.markdown(f"""
+    st_html(f"""
     <div style="
         background: linear-gradient(135deg, #0f172a, #1e293b);
         border-radius: 12px;
@@ -166,7 +166,7 @@ def _render_briefing(plan: InterviewPlan) -> None:
             </div>
         </div>
     </div>
-    """, unsafe_allow_html=True)
+    """)
 
 
 def _render_question_card(question: InterviewQuestion, index: int) -> None:
@@ -187,7 +187,7 @@ def _render_question_card(question: InterviewQuestion, index: int) -> None:
     diff_style = _difficulty_style(question.difficulty)
     accent = dim_style["accent"]
 
-    st.markdown(f"""
+    st_html(f"""
     <div style="
         background: #ffffff;
         border: 1px solid #e2e8f0;
@@ -260,12 +260,12 @@ def _render_question_card(question: InterviewQuestion, index: int) -> None:
             {question.rationale}
         </div>
     </div>
-    """, unsafe_allow_html=True)
+    """)
 
     # Follow-up — shown as expandable below the card
     if question.follow_up:
         with st.expander(f"↳  Follow-up for Q{index:02d}", expanded=False):
-            st.markdown(f"""
+            st_html(f"""
             <div style="
                 background: #f5f3ff;
                 border: 1px solid #c4b5fd;
@@ -278,7 +278,7 @@ def _render_question_card(question: InterviewQuestion, index: int) -> None:
                 <span style="font-weight: 600;">Follow-up: </span>
                 {question.follow_up}
             </div>
-            """, unsafe_allow_html=True)
+            """)
 
 
 def _render_flags(
@@ -300,24 +300,23 @@ def _render_flags(
         text:   Text colour for flag cards.
         icon:   Emoji icon prefix.
     """
-    st.markdown(f"""
+    st_html(f"""
     <div style="font-size: 0.72rem; font-weight: 600; letter-spacing: 0.1em;
                 text-transform: uppercase; color: #64748b;
                 margin-bottom: 0.6rem;">
         {icon} {label}
     </div>
-    """, unsafe_allow_html=True)
+    """)
 
     if not flags:
-        st.markdown(
+        st_html(
             '<div style="color: #94a3b8; font-size: 0.85rem;">'
             'None identified.</div>',
-            unsafe_allow_html=True,
         )
         return
 
     for flag in flags:
-        st.markdown(f"""
+        st_html(f"""
         <div style="
             background: {bg};
             border: 1px solid {border};
@@ -328,7 +327,7 @@ def _render_flags(
             line-height: 1.5;
             margin-bottom: 0.4rem;
         ">{flag}</div>
-        """, unsafe_allow_html=True)
+        """)
 
 
 # ------------------------------------------------------------------

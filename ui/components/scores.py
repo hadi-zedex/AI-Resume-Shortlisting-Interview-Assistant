@@ -1,4 +1,5 @@
 import streamlit as st
+from ui.utils import st_html
 from src.models import ScoringResult, DimensionScore
 from src.models.enums import ScoreDimension, MatchType
 
@@ -16,9 +17,8 @@ def render_scores(scoring: ScoringResult) -> None:
     Args:
         scoring: ScoringResult from the ScoringEngine.
     """
-    st.markdown(
+    st_html(
         '<div class="section-header">Scoring Results</div>',
-        unsafe_allow_html=True,
     )
 
     # --- Overall score + strengths/gaps side by side ---
@@ -30,16 +30,16 @@ def render_scores(scoring: ScoringResult) -> None:
     with right:
         _render_strengths_gaps(scoring)
 
-    st.markdown("<br>", unsafe_allow_html=True)
+    st_html("<br>")
 
     # --- 4 Dimension score cards ---
-    st.markdown("""
+    st_html("""
     <div style="font-size: 0.72rem; font-weight: 600; letter-spacing: 0.1em;
                 text-transform: uppercase; color: #64748b;
                 margin-bottom: 0.75rem;">
         Dimension Breakdown
     </div>
-    """, unsafe_allow_html=True)
+    """)
 
     col1, col2 = st.columns(2, gap="medium")
 
@@ -65,7 +65,7 @@ def _render_overall_score(scoring: ScoringResult) -> None:
     score = scoring.overall_score
     color = _score_color(score)
 
-    st.markdown(f"""
+    st_html(f"""
     <div style="
         background: linear-gradient(135deg, #0f172a, #1e3a5f);
         border-radius: 12px;
@@ -98,7 +98,7 @@ def _render_overall_score(scoring: ScoringResult) -> None:
             margin-top: 0.3rem;
         ">out of 100</div>
     </div>
-    """, unsafe_allow_html=True)
+    """)
 
 
 def _render_strengths_gaps(scoring: ScoringResult) -> None:
@@ -106,17 +106,17 @@ def _render_strengths_gaps(scoring: ScoringResult) -> None:
     s_col, g_col = st.columns(2, gap="small")
 
     with s_col:
-        st.markdown("""
+        st_html("""
         <div style="font-size: 0.72rem; font-weight: 600; letter-spacing: 0.1em;
                     text-transform: uppercase; color: #166534;
                     margin-bottom: 0.5rem;">
             ✦ Strengths
         </div>
-        """, unsafe_allow_html=True)
+        """)
 
         if scoring.strengths:
             for strength in scoring.strengths:
-                st.markdown(f"""
+                st_html(f"""
                 <div style="
                     background: #f0fdf4;
                     border: 1px solid #86efac;
@@ -127,26 +127,25 @@ def _render_strengths_gaps(scoring: ScoringResult) -> None:
                     margin-bottom: 0.4rem;
                     line-height: 1.4;
                 ">{strength}</div>
-                """, unsafe_allow_html=True)
+                """)
         else:
-            st.markdown(
+            st_html(
                 '<div style="color: #94a3b8; font-size: 0.82rem;">'
                 'None identified.</div>',
-                unsafe_allow_html=True,
             )
 
     with g_col:
-        st.markdown("""
+        st_html("""
         <div style="font-size: 0.72rem; font-weight: 600; letter-spacing: 0.1em;
                     text-transform: uppercase; color: #991b1b;
                     margin-bottom: 0.5rem;">
             ✦ Gaps
         </div>
-        """, unsafe_allow_html=True)
+        """)
 
         if scoring.gaps:
             for gap in scoring.gaps:
-                st.markdown(f"""
+                st_html(f"""
                 <div style="
                     background: #fef2f2;
                     border: 1px solid #fca5a5;
@@ -157,12 +156,11 @@ def _render_strengths_gaps(scoring: ScoringResult) -> None:
                     margin-bottom: 0.4rem;
                     line-height: 1.4;
                 ">{gap}</div>
-                """, unsafe_allow_html=True)
+                """)
         else:
-            st.markdown(
+            st_html(
                 '<div style="color: #94a3b8; font-size: 0.82rem;">'
                 'None identified.</div>',
-                unsafe_allow_html=True,
             )
 
 
@@ -184,7 +182,7 @@ def _render_dimension_card(
     score = dim_score.score
     bar_width = int(score)
 
-    st.markdown(f"""
+    st_html(f"""
     <div class="score-card">
         <div style="display: flex; justify-content: space-between;
                     align-items: flex-start; margin-bottom: 0.6rem;">
@@ -222,7 +220,7 @@ def _render_dimension_card(
             line-height: 1.5;
         ">{dim_score.explanation}</div>
     </div>
-    """, unsafe_allow_html=True)
+    """)
 
     # Evidence — expandable
     if dim_score.evidence:
@@ -238,7 +236,7 @@ def _render_dimension_card(
                 else:
                     bg, fg, border = "#f8fafc", "#475569", "#e2e8f0"
 
-                st.markdown(f"""
+                st_html(f"""
                 <div style="
                     background: {bg};
                     border: 1px solid {border};
@@ -250,7 +248,7 @@ def _render_dimension_card(
                     line-height: 1.4;
                     font-family: 'IBM Plex Mono', monospace;
                 ">{item}</div>
-                """, unsafe_allow_html=True)
+                """)
 
 
 def _render_skill_matches(scoring: ScoringResult) -> None:
@@ -258,16 +256,16 @@ def _render_skill_matches(scoring: ScoringResult) -> None:
     Render the skill match breakdown as a styled table.
     Groups by match type with colour coding per row.
     """
-    st.markdown("""
+    st_html("""
     <div style="font-size: 0.72rem; font-weight: 600; letter-spacing: 0.1em;
                 text-transform: uppercase; color: #64748b;
                 margin: 1.25rem 0 0.75rem 0;">
         Skill Match Breakdown
     </div>
-    """, unsafe_allow_html=True)
+    """)
 
     # Header row
-    st.markdown("""
+    st_html("""
     <div style="display: grid; grid-template-columns: 1fr 1fr 1fr 2fr;
                 gap: 0.5rem; padding: 0.4rem 0.75rem;
                 background: #f8fafc; border-radius: 6px;
@@ -281,7 +279,7 @@ def _render_skill_matches(scoring: ScoringResult) -> None:
         <div style="font-size: 0.7rem; font-weight: 600; color: #64748b;
                     text-transform: uppercase; letter-spacing: 0.08em;">Explanation</div>
     </div>
-    """, unsafe_allow_html=True)
+    """)
 
     # Sort: exact first, then semantic, partial, none
     order = {
@@ -301,7 +299,7 @@ def _render_skill_matches(scoring: ScoringResult) -> None:
         explanation = match.explanation or "—"
         match_label = match.match_type.value.upper()
 
-        st.markdown(f"""
+        st_html(f"""
         <div style="display: grid; grid-template-columns: 1fr 1fr 1fr 2fr;
                     gap: 0.5rem; padding: 0.5rem 0.75rem;
                     background: {bg}; border-radius: 6px;
@@ -325,7 +323,7 @@ def _render_skill_matches(scoring: ScoringResult) -> None:
             <div style="font-size: 0.8rem; color: #64748b;
                         line-height: 1.4;">{explanation}</div>
         </div>
-        """, unsafe_allow_html=True)
+        """)
 
 
 # ------------------------------------------------------------------

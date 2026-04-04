@@ -1,6 +1,7 @@
 import streamlit as st
 from src.models import CandidateProfile, JobDescription
 from src.models.enums import SkillLevel
+from ui.utils import st_html
 
 
 def render_profile(candidate: CandidateProfile, jd: JobDescription) -> None:
@@ -18,14 +19,14 @@ def render_profile(candidate: CandidateProfile, jd: JobDescription) -> None:
         candidate: Parsed CandidateProfile from the pipeline.
         jd:        Parsed JobDescription (used to highlight matching skills).
     """
-    st.markdown('<div class="section-header">Candidate Profile</div>', unsafe_allow_html=True)
+    st_html('<div class="section-header">Candidate Profile</div>')
 
     # --- Identity card ---
     _render_identity(candidate)
 
     # --- Summary ---
     if candidate.summary:
-        st.markdown(f"""
+        st_html(f"""
         <div class="info-card" style="border-left: 3px solid #3b82f6;">
             <div style="font-size: 0.72rem; font-weight: 600; letter-spacing: 0.1em;
                         text-transform: uppercase; color: #64748b; margin-bottom: 0.5rem;">
@@ -35,7 +36,7 @@ def render_profile(candidate: CandidateProfile, jd: JobDescription) -> None:
                 {candidate.summary}
             </div>
         </div>
-        """, unsafe_allow_html=True)
+        """)
 
     # --- Skills ---
     _render_skills(candidate, jd)
@@ -81,7 +82,7 @@ def _render_identity(candidate: CandidateProfile) -> None:
         else ""
     )
 
-    st.markdown(f"""
+    st_html(f"""
     <div class="info-card">
         <div style="display: flex; justify-content: space-between; align-items: flex-start;">
             <div>
@@ -97,7 +98,7 @@ def _render_identity(candidate: CandidateProfile) -> None:
             <div>{exp_years}</div>
         </div>
     </div>
-    """, unsafe_allow_html=True)
+    """)
 
 
 def _render_skills(candidate: CandidateProfile, jd: JobDescription) -> None:
@@ -115,13 +116,13 @@ def _render_skills(candidate: CandidateProfile, jd: JobDescription) -> None:
         for s in (jd.required_skills + jd.preferred_skills)
     }
 
-    st.markdown("""
+    st_html("""
     <div style="font-size: 0.72rem; font-weight: 600; letter-spacing: 0.1em;
                 text-transform: uppercase; color: #64748b;
                 margin: 1rem 0 0.5rem 0;">
         Skills
     </div>
-    """, unsafe_allow_html=True)
+    """)
 
     pills_html = ""
     for skill in candidate.skills:
@@ -145,18 +146,17 @@ def _render_skills(candidate: CandidateProfile, jd: JobDescription) -> None:
                 f'{skill.name}{level_badge}</span>'
             )
 
-    st.markdown(
+    st_html(
         f'<div style="line-height: 2.2;">{pills_html}</div>',
-        unsafe_allow_html=True,
     )
 
     # Legend
-    st.markdown("""
+    st_html("""
     <div style="margin-top: 0.5rem; font-size: 0.72rem; color: #94a3b8;">
         <span style="color: #1e40af;">■</span> Matches JD requirement &nbsp;
         <span style="color: #94a3b8;">■</span> Other skills
     </div>
-    """, unsafe_allow_html=True)
+    """)
 
 
 def _render_experience(candidate: CandidateProfile) -> None:
@@ -164,13 +164,13 @@ def _render_experience(candidate: CandidateProfile) -> None:
     if not candidate.experience:
         return
 
-    st.markdown("""
+    st_html("""
     <div style="font-size: 0.72rem; font-weight: 600; letter-spacing: 0.1em;
                 text-transform: uppercase; color: #64748b;
                 margin: 1rem 0 0.5rem 0;">
         Experience
     </div>
-    """, unsafe_allow_html=True)
+    """)
 
     for exp in candidate.experience:
         duration_str = (
@@ -182,27 +182,24 @@ def _render_experience(candidate: CandidateProfile) -> None:
         with st.expander(f"**{exp.role}** — {exp.company}  ·  {duration_str}"):
 
             if exp.description:
-                st.markdown(
+                st_html(
                     f'<div style="color: #475569; font-size: 0.9rem; '
                     f'line-height: 1.6; margin-bottom: 0.75rem;">'
                     f'{exp.description}</div>',
-                    unsafe_allow_html=True,
                 )
 
             if exp.achievements:
-                st.markdown(
+                st_html(
                     '<div style="font-size: 0.72rem; font-weight: 600; '
                     'letter-spacing: 0.1em; text-transform: uppercase; '
                     'color: #64748b; margin-bottom: 0.4rem;">Achievements</div>',
-                    unsafe_allow_html=True,
                 )
                 for ach in exp.achievements:
-                    st.markdown(
+                    st_html(
                         f'<div style="color: #166534; font-size: 0.88rem; '
                         f'padding: 0.25rem 0; padding-left: 1rem; '
                         f'border-left: 2px solid #86efac; margin-bottom: 0.3rem;">'
                         f'✦ {ach}</div>',
-                        unsafe_allow_html=True,
                     )
 
             if exp.keywords:
@@ -213,9 +210,8 @@ def _render_experience(candidate: CandidateProfile) -> None:
                     f'font-family: monospace;">{kw}</span>'
                     for kw in exp.keywords
                 )
-                st.markdown(
+                st_html(
                     f'<div style="margin-top: 0.5rem;">{keywords_html}</div>',
-                    unsafe_allow_html=True,
                 )
 
 
@@ -224,19 +220,19 @@ def _render_education(candidate: CandidateProfile) -> None:
     if not candidate.education:
         return
 
-    st.markdown("""
+    st_html("""
     <div style="font-size: 0.72rem; font-weight: 600; letter-spacing: 0.1em;
                 text-transform: uppercase; color: #64748b;
                 margin: 1rem 0 0.5rem 0;">
         Education
     </div>
-    """, unsafe_allow_html=True)
+    """)
 
     for edu in candidate.education:
         degree_str = " ".join(filter(None, [edu.degree, edu.field]))
         year_str = str(edu.year) if edu.year else ""
 
-        st.markdown(f"""
+        st_html(f"""
         <div style="display: flex; justify-content: space-between;
                     align-items: center; padding: 0.6rem 0;
                     border-bottom: 1px solid #f1f5f9;">
@@ -248,7 +244,7 @@ def _render_education(candidate: CandidateProfile) -> None:
             </div>
             <span style="color: #94a3b8; font-size: 0.82rem;">{year_str}</span>
         </div>
-        """, unsafe_allow_html=True)
+        """)
 
 
 # ------------------------------------------------------------------

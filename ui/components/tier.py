@@ -1,4 +1,5 @@
 import streamlit as st
+from ui.utils import st_html
 from src.models import TierClassification
 from src.models.enums import Tier
 
@@ -17,15 +18,14 @@ def render_tier(classification: TierClassification) -> None:
     Args:
         classification: TierClassification from the TierClassifier.
     """
-    st.markdown(
+    st_html(
         '<div class="section-header">Tier Classification</div>',
-        unsafe_allow_html=True,
     )
 
     # --- Top row: tier badge + decision ---
     _render_tier_header(classification)
 
-    st.markdown("<br>", unsafe_allow_html=True)
+    st_html("<br>")
 
     # --- Two columns: reasoning | focus areas ---
     left, right = st.columns([1.2, 1], gap="large")
@@ -49,7 +49,7 @@ def _render_tier_header(classification: TierClassification) -> None:
     tier = classification.tier
     colors = _tier_colors(tier)
 
-    st.markdown(f"""
+    st_html(f"""
     <div style="
         background: {colors['bg']};
         border: 1px solid {colors['border']};
@@ -133,20 +133,20 @@ def _render_tier_header(classification: TierClassification) -> None:
             </div>
         </div>
     </div>
-    """, unsafe_allow_html=True)
+    """)
 
 
 def _render_reasoning(classification: TierClassification) -> None:
     """Render the classifier's reasoning paragraph."""
-    st.markdown("""
+    st_html("""
     <div style="font-size: 0.72rem; font-weight: 600; letter-spacing: 0.1em;
                 text-transform: uppercase; color: #64748b;
                 margin-bottom: 0.6rem;">
         Reasoning
     </div>
-    """, unsafe_allow_html=True)
+    """)
 
-    st.markdown(f"""
+    st_html(f"""
     <div style="
         background: #f8fafc;
         border: 1px solid #e2e8f0;
@@ -156,16 +156,16 @@ def _render_reasoning(classification: TierClassification) -> None:
         color: #334155;
         line-height: 1.7;
     ">{classification.reasoning}</div>
-    """, unsafe_allow_html=True)
+    """)
 
     # --- Dimension score mini summary ---
-    st.markdown("""
+    st_html("""
     <div style="font-size: 0.72rem; font-weight: 600; letter-spacing: 0.1em;
                 text-transform: uppercase; color: #64748b;
                 margin: 1rem 0 0.6rem 0;">
         Score Breakdown
     </div>
-    """, unsafe_allow_html=True)
+    """)
 
     scoring = classification.scoring_result
     dimensions = [
@@ -177,7 +177,7 @@ def _render_reasoning(classification: TierClassification) -> None:
 
     for label, score, color in dimensions:
         bar_width = int(score)
-        st.markdown(f"""
+        st_html(f"""
         <div style="margin-bottom: 0.5rem;">
             <div style="display: flex; justify-content: space-between;
                         align-items: center; margin-bottom: 0.2rem;">
@@ -192,7 +192,7 @@ def _render_reasoning(classification: TierClassification) -> None:
                             height: 100%; border-radius: 999px;"></div>
             </div>
         </div>
-        """, unsafe_allow_html=True)
+        """)
 
 
 def _render_focus_areas(classification: TierClassification) -> None:
@@ -200,19 +200,18 @@ def _render_focus_areas(classification: TierClassification) -> None:
     Render the interviewer focus areas as a numbered checklist.
     Each item is colour-coded based on its content type.
     """
-    st.markdown("""
+    st_html("""
     <div style="font-size: 0.72rem; font-weight: 600; letter-spacing: 0.1em;
                 text-transform: uppercase; color: #64748b;
                 margin-bottom: 0.6rem;">
         Interviewer Focus Areas
     </div>
-    """, unsafe_allow_html=True)
+    """)
 
     if not classification.focus_areas:
-        st.markdown(
+        st_html(
             '<div style="color: #94a3b8; font-size: 0.85rem;">'
             'No specific focus areas identified.</div>',
-            unsafe_allow_html=True,
         )
         return
 
@@ -220,7 +219,7 @@ def _render_focus_areas(classification: TierClassification) -> None:
         # Detect type of focus area for colour coding
         bg, border, icon = _focus_area_style(area)
 
-        st.markdown(f"""
+        st_html(f"""
         <div style="
             background: {bg};
             border: 1px solid {border};
@@ -242,10 +241,10 @@ def _render_focus_areas(classification: TierClassification) -> None:
             <span style="font-size: 0.85rem; color: #334155;
                          line-height: 1.5;">{icon} {area}</span>
         </div>
-        """, unsafe_allow_html=True)
+        """)
 
     # Thresholds footnote
-    st.markdown(f"""
+    st_html(f"""
     <div style="
         margin-top: 1rem;
         font-size: 0.72rem;
@@ -259,7 +258,7 @@ def _render_focus_areas(classification: TierClassification) -> None:
         B: ≥{classification.thresholds_used.tier_b_min:.0f} &nbsp;|&nbsp;
         C: &lt;{classification.thresholds_used.tier_b_min:.0f}
     </div>
-    """, unsafe_allow_html=True)
+    """)
 
 
 # ------------------------------------------------------------------
