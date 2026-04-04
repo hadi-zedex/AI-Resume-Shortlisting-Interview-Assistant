@@ -140,5 +140,28 @@ class LLMClient:
             ) from e
 
 
+class _LazyLLMClient:
+    """
+    Lazy proxy for LLMClient.
+    The real client is instantiated on first use so that importing this
+    module does NOT raise EnvironmentError when GROQ_API_KEY is absent
+    (e.g. during Streamlit Cloud module loading before secrets are injected).
+    """
+
+    def __init__(self):
+        self._instance: Optional[LLMClient] = None
+
+    def _get(self) -> LLMClient:
+        if self._instance is None:
+            self._instance = LLMClient()
+        return self._instance
+
+    def complete(self, *args, **kwargs) -> str:
+        return self._get().complete(*args, **kwargs)
+
+    def complete_json(self, *args, **kwargs) -> dict:
+        return self._get().complete_json(*args, **kwargs)
+
+
 # Singleton — import this everywhere
-llm_client = LLMClient()
+llm_client = _LazyLLMClient()
