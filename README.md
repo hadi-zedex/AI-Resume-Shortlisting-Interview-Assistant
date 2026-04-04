@@ -1,8 +1,14 @@
-# Resume Shortlister — AI-Powered Candidate Screening Engine
+# 🎯 Resume Shortlister — AI-Powered Candidate Screening Engine
+
+[![Live Demo](https://img.shields.io/badge/Live%20Demo-Streamlit-FF4B4B?logo=streamlit&logoColor=white)](https://ai-resume-shortlisting-interview-assistant-evct59wrbs6hnmrnnmd.streamlit.app/)
+[![Python](https://img.shields.io/badge/Python-3.11+-3776AB?logo=python&logoColor=white)](https://python.org)
+[![Groq](https://img.shields.io/badge/LLM-Groq%20%2F%20LLaMA%203.3-orange)](https://console.groq.com)
 
 An intelligent resume screening system that parses resumes, scores candidates
 across 4 dimensions, classifies them into hiring tiers, and generates tailored
-interview plans.
+interview plans — powered by **Groq** (LLaMA 3.3 70B).
+
+🚀 **[Try the live demo →](https://ai-resume-shortlisting-interview-assistant-evct59wrbs6hnmrnnmd.streamlit.app/)**
 
 ---
 
@@ -23,12 +29,22 @@ Every score comes with a plain-English explanation.
 
 ---
 
-## Quickstart
+## Live Demo
+
+Try it instantly — no setup required:
+
+**[https://ai-resume-shortlisting-interview-assistant-evct59wrbs6hnmrnnmd.streamlit.app/](https://ai-resume-shortlisting-interview-assistant-evct59wrbs6hnmrnnmd.streamlit.app/)**
+
+Upload any text-based resume PDF, paste a job description, and get a full candidate assessment in ~30 seconds.
+
+---
+
+## Quickstart (Run Locally)
 
 ### 1. Clone the repo
 ```bash
-git clone https://github.com/your-username/resume-shortlister.git
-cd resume-shortlister
+git clone https://github.com/hadi-zedex/AI-Resume-Shortlisting-Interview-Assistant.git
+cd AI-Resume-Shortlisting-Interview-Assistant
 ```
 
 ### 2. Set up a virtual environment
@@ -45,11 +61,16 @@ pip install -r requirements.txt
 ### 4. Configure your API key
 ```bash
 cp .env.example .env
-# Open .env and add your Anthropic API key:
-# ANTHROPIC_API_KEY=your_api_key_here
+# Open .env and add your Groq API key (free at https://console.groq.com):
+# GROQ_API_KEY=your_api_key_here
 ```
 
-### 5. Run the pipeline
+### 5. Run the Streamlit UI
+```bash
+streamlit run ui/app.py
+```
+
+Or run the pipeline directly from the CLI:
 ```bash
 python -m src.main \
   --resume data/sample_resumes/sample.pdf \
@@ -85,13 +106,14 @@ See [`docs/SYSTEM_DESIGN.md`](docs/SYSTEM_DESIGN.md) for the full architecture d
 
 ### Project structure
 ```
+ui/                     # Streamlit web interface
 src/
-├── models/         # Pydantic data contracts
-├── parser/         # PDF extraction + LLM-based structuring
-├── scorer/         # 4 independent scorers + engine orchestrator
-├── classifier/     # Tier assignment + focus area derivation
-├── questions/      # Interview plan generator
-└── llm/            # Anthropic client wrapper + prompt templates
+├── models/             # Pydantic data contracts
+├── parser/             # PDF extraction + LLM-based structuring
+├── scorer/             # 4 independent scorers + engine orchestrator
+├── classifier/         # Tier assignment + focus area derivation
+├── questions/          # Interview plan generator
+└── llm/                # Groq client wrapper (OpenAI-compatible) + prompt templates
 ```
 
 ---
@@ -123,6 +145,7 @@ src/
 | Pydantic for all data models | Strong type safety and validation, small overhead vs. plain dicts |
 | Singleton pattern for scorers and clients | Simple to use across the codebase, not suitable for multi-threaded scaling |
 | Weighted average for overall score | Transparent and configurable, but assumes dimensions are independent |
+| Groq (LLaMA 3.3 70B) over proprietary models | Free tier available, very fast inference, open-weight model |
 
 ---
 
@@ -136,8 +159,7 @@ src/
   architecture (Celery + Redis) would be needed.
 
 - **LLM non-determinism** — scores can vary slightly between runs for the same
-  resume because Claude is probabilistic. Exact match scoring is deterministic;
-  the three LLM-based scores are not.
+  resume. Exact match scoring is deterministic; the three LLM-based scores are not.
 
 - **No caching** — if the same JD is scored against 50 resumes, the JD
   extraction LLM call runs 50 times. JD extraction results should be cached by
@@ -154,27 +176,22 @@ src/
 
 ### What I'd build next
 
-1. **Streamlit UI** — upload resume, paste JD, see the full output interactively
-2. **Batch processing** — Celery + Redis queue for screening 100+ candidates
-3. **JD caching** — cache parsed JDs by content hash to avoid redundant API calls
-4. **OCR fallback** — integrate `pytesseract` for scanned PDF support
-5. **Score calibration** — recruiter feedback loop to adjust dimension weights
-6. **REST API** — FastAPI wrapper so the engine can be called as a microservice
-7. **Export to PDF** — generate a formatted candidate assessment report
+1. **Batch processing** — Celery + Redis queue for screening 100+ candidates
+2. **JD caching** — cache parsed JDs by content hash to avoid redundant API calls
+3. **OCR fallback** — integrate `pytesseract` for scanned PDF support
+4. **Score calibration** — recruiter feedback loop to adjust dimension weights
+5. **REST API** — FastAPI wrapper so the engine can be called as a microservice
+6. **Export to PDF** — generate a formatted candidate assessment report
 
 ---
 
 ## AI Tools Used
 
--Used Chatgpt for research
+- Used ChatGPT for research
+- Used Excalidraw for creating diagrams
+- Used Claude for architecture ideas and coding assistance
 
--Used excalidraw for creating diagrams
-
--Used Claude for architecture ideas
-
--Used Claude for coding and boilerplate codes
-
--LLM calls were used for tasks below
+LLM calls are used for the following tasks:
 
 | Task | Why AI, not code |
 |---|---|
@@ -197,16 +214,16 @@ src/
 ### Where I disagreed with AI and why
 
 - **Single large prompt vs. 4 separate calls** — an initial suggestion was to
-  score all 4 dimensions in one large Claude call to reduce latency. I disagreed:
+  score all 4 dimensions in one large call to reduce latency. I disagreed:
   separate calls keep each scorer independently testable, produce cleaner
   outputs, and make debugging much easier. The latency cost is acceptable for
   this use case.
 
 - **`CandidateProfile(**raw_json)` for model construction** — an early approach
-  was to unpack Claude's JSON directly into Pydantic models. I replaced this
+  was to unpack the LLM's JSON directly into Pydantic models. I replaced this
   with manual field-by-field construction because direct unpacking crashes on
-  any unexpected field from Claude, and the manual approach gives us graceful
-  fallbacks and clear error messages per field.
+  any unexpected field, and the manual approach gives graceful fallbacks and
+  clear error messages per field.
 
 ---
 
@@ -230,8 +247,7 @@ TIER_B_MIN_SCORE = 55.0
 ## Requirements
 
 - Python 3.11+
-- Anthropic API key
+- Groq API key (free at [console.groq.com](https://console.groq.com))
 - See `requirements.txt` for full dependency list
 
 ---
-
